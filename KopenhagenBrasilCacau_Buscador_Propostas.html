@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kopenhagen | Brasil Cacau | Consulta de Propostas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --magenta:#FF3162;
+    --magenta-dark:#D81F4E;
+    --ink:#16151A;
+    --ink-soft:#4A4852;
+    --paper:#FFFFFF;
+    --bg:#F6F4F1;
+    --line:#E7E4DE;
+    --emerald:#0F9D6E;
+    --emerald-bg:#E9F7F1;
+    --muted:#8B8894;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Montserrat',sans-serif;
+    min-height:100vh;
+    padding:48px 20px 80px;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--magenta);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fjalla One',sans-serif;
+    font-weight:400;
+    font-size:clamp(32px,6vw,48px);
+    letter-spacing:.01em;
+    margin:0 0 12px;
+    line-height:1.05;
+    color:var(--ink);
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.55;
+    margin:0 0 36px;
+    max-width:56ch;
+  }
+  .search-shell{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:6px;
+    box-shadow:0 1px 2px rgba(22,21,26,0.04);
+    position:relative;
+  }
+  .search-shell::after{
+    content:'';
+    position:absolute;
+    left:6px; right:6px; bottom:0;
+    height:2px;
+    background:linear-gradient(90deg,var(--magenta),var(--emerald));
+    border-radius:0 0 12px 12px;
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .35s ease;
+  }
+  .search-shell.active::after{transform:scaleX(1);}
+  #search{
+    width:100%;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:'Montserrat',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--ink);
+    padding:16px 18px;
+  }
+  #search::placeholder{color:var(--muted); font-weight:500;}
+
+  .meta-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin:18px 2px 14px;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .meta-row b{color:var(--ink);}
+
+  .hint-chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .chip{
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  .brand-filters{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:16px;
+  }
+  .brand-chip{
+    font-family:'Montserrat',sans-serif;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:7px 14px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .brand-chip:hover{border-color:var(--magenta); color:var(--magenta-dark);}
+  .brand-chip.active{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+
+  .brand-tag{
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--muted);
+    margin-bottom:2px;
+    display:block;
+  }
+
+  .results{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .card:hover{border-color:var(--magenta); transform:translateY(-1px);}
+  .card-info{min-width:0;}
+  .card-store{
+    font-weight:700;
+    font-size:15px;
+    color:var(--ink);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .card-meta{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:3px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .card-meta span{white-space:nowrap;}
+  mark{
+    background:rgba(255,49,98,0.16);
+    color:var(--magenta-dark);
+    border-radius:3px;
+    padding:0 1px;
+  }
+  .btn{
+    flex-shrink:0;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    padding:10px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease;
+  }
+  .btn:hover{background:var(--magenta);}
+
+  .card-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-shrink:0;
+  }
+  .badge{
+    font-size:11px;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:100px;
+    white-space:nowrap;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .badge-signed{background:var(--emerald-bg); color:var(--emerald);}
+  .badge-pending{background:#FFF2E0; color:#B7791F;}
+  .badge-na{background:#EFEDE9; color:var(--muted);}
+
+  .empty{
+    text-align:center;
+    padding:48px 20px;
+    color:var(--muted);
+  }
+  .empty-icon{
+    font-family:'Fjalla One',sans-serif;
+    font-size:40px;
+    color:var(--line);
+    margin-bottom:6px;
+  }
+  .empty b{color:var(--ink-soft);}
+
+  .idle{
+    text-align:center;
+    padding:56px 20px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  footer{
+    margin-top:44px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+  footer b{color:var(--ink-soft);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Kopenhagen · Brasil Cacau · Oto CRM</p>
+    <h1>Consulta de Propostas</h1>
+    <p class="sub">Busque pelo CNPJ da loja, nome do responsável ou nome da loja para encontrar o link da sua proposta de upsell.</p>
+
+    <div class="search-shell" id="searchShell">
+      <input type="text" id="search" placeholder="Digite o CNPJ, nome da loja ou do responsável…" autocomplete="off">
+    </div>
+
+    <div class="brand-filters" id="brandFilters">
+      <button class="brand-chip active" data-brand="all">Todas as marcas</button>
+      <button class="brand-chip" data-brand="Kopenhagen">Kopenhagen</button>
+      <button class="brand-chip" data-brand="Brasil Cacau">Brasil Cacau</button>
+    </div>
+
+    <div class="hint-chips">
+      <span class="chip">Ex: 49.878.110/0001-39</span>
+      <span class="chip">Ex: Reginele Amorim</span>
+      <span class="chip">Ex: Kopenhagen Bangu</span>
+    </div>
+
+    <div class="meta-row" id="metaRow" style="display:none;">
+      <span id="resultCount"></span>
+      <span><b id="totalBase">0</b> lojas na base</span>
+    </div>
+
+    <div id="output"></div>
+
+    <footer>
+      <b id="totalBaseFooter">0</b> lojas mapeadas no grupo (<span id="signedCount">0</span> assinadas · <span id="pendingCount">0</span> pendentes de assinatura) · Não encontrou a sua? Fale com o CS responsável.
+    </footer>
+  </div>
+
+<script>
+const DATA = [{"marca": "Kopenhagen", "cnpj": "49745547000105", "nome_loja": "KOP SP SAO JOAQUIM DA BARRA", "resp_nome": "MELISSA M MILANESI TOLOI", "link": "https://lp.crmbonus.com/BnUtG64bITCfS6B", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "49878110000139", "nome_loja": "Kopenhagen 49.878.110/0001-39", "resp_nome": "MARIA THAIZE ASMIR MARMO PELLEGRINI", "link": "https://lp.crmbonus.com/LvMG7mNN14TLZfjd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "43196882000115", "nome_loja": "KOP PALMAS CAPIM DOURADO SHOPPING", "resp_nome": "Ana Caroline Silva Santos", "link": "https://lp.crmbonus.com/GQsbaCnyQrX3GVmt4M", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "63059517000176", "nome_loja": "KOP CE FORTALEZA SHOPPING RIO MAR", "resp_nome": "Geysa Loren Alves de Arruda", "link": "https://lp.crmbonus.com/IsRwmgPPuFepAdm6lH", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "43429946000180", "nome_loja": "KOP PR BIGORRILHO ANCHIETA", "resp_nome": "Aline cunha", "link": "https://lp.crmbonus.com/JoIAHKrq5b", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51274129000129", "nome_loja": "KOP CE COMPLEXO PATIO DOM LUIS", "resp_nome": "Valquíria Caroline Gonçalves Portela", "link": "https://lp.crmbonus.com/4xnu45pkrHriFq5NV1Vn", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51124645000177", "nome_loja": "KOP PR CAMPO MOURAO CENTRO", "resp_nome": "Denise Zuconelli Bageston", "link": "https://lp.crmbonus.com/SKCKJh5SgFeLn40", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "14216753000143", "nome_loja": "KOP SP PARAISO H COR", "resp_nome": "Egydio Donati", "link": "https://lp.crmbonus.com/cxBqydUnLn8w5", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "45986993000150", "nome_loja": "KOP SP BARRETOS", "resp_nome": "Fernanda Menezes de Carvalho Cançado", "link": "https://lp.crmbonus.com/FE11o8QAgQkAFXYZ4H", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47703213000143", "nome_loja": "KOP SP LEME", "resp_nome": "Andrea Rodrigues de Oliveira Russo", "link": "https://lp.crmbonus.com/whjAa6tCFJvF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "42581318000153", "nome_loja": "KOP BOULEVARD MOGI GUACU", "resp_nome": "Andrea Rodrigues de Oliveira Russo", "link": "https://lp.crmbonus.com/huhsSooEbyLkitLWy", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31582556000167", "nome_loja": "KOP ARARAS", "resp_nome": "Andrea Rodrigues de Oliveira Russo", "link": "https://lp.crmbonus.com/d289RHbWCjkdgQW7F", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51217208000106", "nome_loja": "KOP SP SJC SHOPPING ORIENTE", "resp_nome": "Thiago Fonseca Bellini dos Santos", "link": "https://lp.crmbonus.com/MXnPLr1A47", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "05805255300178", "nome_loja": "Kopenhagen Shopping Bangu", "resp_nome": "KARLA REGINA MONTEIRO CAMPOS", "link": "https://lp.crmbonus.com/kblobi9Vk5", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722000891", "nome_loja": "KOP SP UBATUBA MALL AEROPORTO", "resp_nome": "Kopenhagen Brisamar", "link": "https://lp.crmbonus.com/K1kS19O93fbq", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "11690297000180", "nome_loja": "KOP SP BROOKLIN PE JOSE ANT DOS SANTOS", "resp_nome": "ANA TERESA HELFENSTEIN", "link": "https://lp.crmbonus.com/4O0NBnj52Yo1a44YMa", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "39970655000128", "nome_loja": "KOP BH BELVEDERE", "resp_nome": "Luciana maria Lopes de andrade bastos", "link": "https://lp.crmbonus.com/PJxGurAXJGhX8hZqgH", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47973705000159", "nome_loja": "KOP PR TOLEDO", "resp_nome": "Priscila Fávaro Zottesso", "link": "https://lp.crmbonus.com/kfYZTn0sZGxxm", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "59303609000182", "nome_loja": "KOP MG TEOFILO OTONI CENTRO LT", "resp_nome": "Daniel Tameirão Lima Abrantes", "link": "https://lp.crmbonus.com/pA0bk8AdxPzQb4sK8jK4", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08430014000157", "nome_loja": "KOP SP VILA MARIANA DOMINGOS DE MORAES", "resp_nome": "ADRIANA DIAS DOS REIS", "link": "https://lp.crmbonus.com/5Jl4VgudKuHc95r", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57765797000135", "nome_loja": "KOP RJ PARK SHOPP CAMPO GRANDE", "resp_nome": "Luana da Silva campos", "link": "https://lp.crmbonus.com/Nrwwk9BXEQn", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10335806000194", "nome_loja": "KOP SAO JOAO DA BOA VISTA", "resp_nome": "Eduardo Simões", "link": "https://lp.crmbonus.com/dsyRx6yY21Uxi", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "17947787000368", "nome_loja": "KOP SHOPPING RECIFE", "resp_nome": "Valderlane Helena rodrigues", "link": "https://lp.crmbonus.com/tYbS9LnSiy5H", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57282390000157", "nome_loja": "Kopenhagen Grupo Fit", "resp_nome": "Pedro Costa", "link": "https://lp.crmbonus.com/ftiR3l5plXZkMar", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47506954000134", "nome_loja": "KOP SP INTERLAR ARICANDUVA", "resp_nome": "Camila Freire Lima", "link": "https://lp.crmbonus.com/gr9inag794yyli", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "63316437000159", "nome_loja": "KOP ALFENAS", "resp_nome": "HILDA MAIRA VIEIRA DA SILVEIRA DE CARVALHO", "link": "https://lp.crmbonus.com/Bv0HU2kPYQDl3gib", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08229889000195", "nome_loja": "KOP SP BROOKLIN FLORIDA", "resp_nome": "Jussara faria", "link": "https://lp.crmbonus.com/nq49T0toLresK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "05355505600079", "nome_loja": "Kopenhagen Esplanada", "resp_nome": "Mayara", "link": "https://lp.crmbonus.com/wTE3u6lSQizUnhU", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08191061000195", "nome_loja": "KOP INDAIATUBA CIDADE NOVA", "resp_nome": "Mayara Jurdy Martins Pagliarini", "link": "https://lp.crmbonus.com/ehtoMEaUD522hxI0KBbU", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "43168609000187", "nome_loja": "KOP GO ANAPOLIS", "resp_nome": "Gustavo Ferreira Caixeta", "link": "https://lp.crmbonus.com/9z9wJ6m7nZ2NU", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51404777000152", "nome_loja": "KOP SP ITAPIRA CENTRO", "resp_nome": "Valeria Queluz Siqueira", "link": "https://lp.crmbonus.com/GiTWAzTH3pP9vqlqU84g", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "63722202000167", "nome_loja": "KOP SP SOROCABA CONFIANCA AV SP", "resp_nome": "CAROLINA MARTINEZ BRAIT SERRA", "link": "https://lp.crmbonus.com/J0oLlOAPLmo2W3", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54532843000249", "nome_loja": "KOP SP SAO JOSE DO RIO PRETO LUX MALL", "resp_nome": "elida coronato", "link": "https://lp.crmbonus.com/6d0xCi5YyujZ4dcz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31987149000130", "nome_loja": "KOP SJC CENTER VALE SHOPP", "resp_nome": "Gabriela Robles", "link": "https://lp.crmbonus.com/YZo30HWTo4tua", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10233626000100", "nome_loja": "KOP SHOPPING PATIO BATEL", "resp_nome": "Camila Aparecida Bertanha Pereira", "link": "https://lp.crmbonus.com/OCeEUtW7jNsvKfs", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "45813522000140", "nome_loja": "KOP FLORIANOPOLIS CENTRO", "resp_nome": "Natalia L Denardi", "link": "https://lp.crmbonus.com/TfsWomwmzB8E5e", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "13173915000140", "nome_loja": "KOP CASCAVEL JL SHOPPING", "resp_nome": "MARILENE LURDES GIASON", "link": "https://lp.crmbonus.com/XAkIJcNurwFCterTR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "13173915000140", "nome_loja": "KOP CASCAVEL JL SHOPPING", "resp_nome": "MARILENE LURDES GIASON", "link": "https://lp.crmbonus.com/XAkIJcNurwFCterTR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "43046482000123", "nome_loja": "KOP PR CASCAVEL CENTRO", "resp_nome": "MARILENE LURDES GIASON", "link": "https://lp.crmbonus.com/c0ELGuFb5zDK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10401203000143", "nome_loja": "KOP CAMPINAS CENTRO", "resp_nome": "Léa Marina Gragnani Zogbi", "link": "https://lp.crmbonus.com/n7ZAeYwOh2jJERu", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31976003000199", "nome_loja": "KOP CAMPINAS BEST CENTER CHACARA PRIMAVERA", "resp_nome": "Léa Marina Graganani Zogbi", "link": "https://lp.crmbonus.com/NJycIiaQAThjN88", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54543429000154", "nome_loja": "KOP SP CAMPINAS TAQUARAL", "resp_nome": "Vitor Hugo Pierre Jacomino", "link": "https://lp.crmbonus.com/TvSvWAWR4JFOr7ZpCnnI", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "21660656000372", "nome_loja": "KOP BLUMENAU NEUMARKT SHOPPING", "resp_nome": "Sara Simas F Ertel", "link": "https://lp.crmbonus.com/SOhuNf0KQItFqkwZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34169311000109", "nome_loja": "KOP ITABUNA SHOPPING JEQUITIBA", "resp_nome": "Cristina Souza Dos Anjos", "link": "https://lp.crmbonus.com/odOiGP39b7iBwuE6oyUi", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "67517891000129", "nome_loja": "KOP SHOPPING INTERNACIONAL GUARULHOS", "resp_nome": "KELY MALDONADO MACHADO", "link": "https://lp.crmbonus.com/8XZmXsXw4mvIm2Nz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "59742070000249", "nome_loja": "KOP SP PAULINIA WINNER MALL SHOPPING", "resp_nome": "RODRIGO RODRIGUES VIDAL", "link": "https://lp.crmbonus.com/Fy6Yoc4xOMYuy", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "59742070000168", "nome_loja": "KOP SANTA BARBARA DO OESTE TIVOLI S", "resp_nome": "RODRIGO RODRIGUES VIDAL", "link": "https://lp.crmbonus.com/cOOJC4QY0sjyxT", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58190061000149", "nome_loja": "KOP BA SALVADOR SHOP CIDADE", "resp_nome": "Fernanda Almeida Rêgo Nascimento", "link": "https://lp.crmbonus.com/K7dVBKv6qtV23pYj", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "52300658000112", "nome_loja": "KOP GO GOIANESIA", "resp_nome": "Claudia Rezek Rodrigues", "link": "https://lp.crmbonus.com/siAsNH1hWqtw", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54835993000140", "nome_loja": "KOP DF BRASILIA SETOR NOROESTE", "resp_nome": "Ana Carolina Rezek Nascimento", "link": "https://lp.crmbonus.com/DflOD4s7QD1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "67197494000117", "nome_loja": "KOP BA LUIS EDUARDO MAGALHAES", "resp_nome": "Jaqueline Araújo da silva", "link": "https://lp.crmbonus.com/NT0S8Rwz20", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61706731000141", "nome_loja": "KOP SUMARE PARKCITY", "resp_nome": "KOP SUMARE PARKCITY", "link": "https://lp.crmbonus.com/zt1TE3qkDf9AAhBEZ7", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "12370295000177", "nome_loja": "KOP SP VILA CLEMENTINO PEDRO DE TOLEDO", "resp_nome": "Roberto Tunicceli", "link": "https://lp.crmbonus.com/2wmSvQZgAknhduLR3", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "37151222000115", "nome_loja": "KOP GOIANIA FLAMBOYANT SHOPPING CENTER", "resp_nome": "Rodrigo Felipe Siqueira", "link": "https://lp.crmbonus.com/lxjDphabIAg", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "67517891000129", "nome_loja": "KOP SHOPPING INTERNACIONAL GUARULHOS", "resp_nome": "KELY MALDONADO MACHADO", "link": "https://lp.crmbonus.com/8XZmXsXw4mvIm2Nz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "56701308000119", "nome_loja": "KOP SP NOVA CANTAREIRA", "resp_nome": "Cristiane Da Costa Fernandes", "link": "https://lp.crmbonus.com/yvAmppCCwv5", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "66058919000144", "nome_loja": "KOP SP SAO PAULO HOSP SANTA PAULA", "resp_nome": "Cristiane Da Costa Fernandes", "link": "https://lp.crmbonus.com/OrrWp4Pam2D8Kb0Fg", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "42921945000196", "nome_loja": "KOP SCS JD. BARCELONA", "resp_nome": "Mariana da Silva Fernandes", "link": "https://lp.crmbonus.com/bLOnIonXmhyPbEf3WEE", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10491203000143", "nome_loja": "Kopenhagen 10.491.203/0001-43", "resp_nome": "Sônia Regina guedes de araujo", "link": "https://lp.crmbonus.com/ll2PfuKoFKXeMAQISa", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51005181000180", "nome_loja": "KOP SP PRESIDENTE PRUDENTE PARQUE DO POVO", "resp_nome": "Cristiane Santana Rosa", "link": "https://lp.crmbonus.com/cR6dkCRgZpfru", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "00027936000106", "nome_loja": "KOP MARILIA SHOPPING", "resp_nome": "Marcos Del Masso Fairbanks", "link": "https://lp.crmbonus.com/ywVW6eJVhm50wRm0e", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54532843000168", "nome_loja": "KOP SP REDENTORA", "resp_nome": "Letícia Cristina Ferreira da Macena", "link": "https://lp.crmbonus.com/V94Tex2pGK6tO", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "50549488000189", "nome_loja": "KOP RS BENTO GONÇALVES", "resp_nome": "Cristiane Romagna", "link": "https://lp.crmbonus.com/hJoDWUlUr0XQM", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "56982310000103", "nome_loja": "KOP SP LENCOIS PAULISTA 981", "resp_nome": "Thalia Minatelli", "link": "https://lp.crmbonus.com/vsnY03x5Avfocqbbd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51324526000168", "nome_loja": "KOP SAO BERNARDO DO CAMPO VILA MARLENE", "resp_nome": "Tais Marotti", "link": "https://lp.crmbonus.com/EOlFNBzAoe11edG3xQtR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08773365000322", "nome_loja": "KOP SP PRAIA ENSEADA", "resp_nome": "Daiane Cabral dos Santos", "link": "https://lp.crmbonus.com/O3mKbe9H5tHOy", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48014306000123", "nome_loja": "KOP SP PLANALTO PAULISTA", "resp_nome": "ROBERTO TUNICELLI", "link": "https://lp.crmbonus.com/mFBiFpTPwzm", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57620129000110", "nome_loja": "KOP SP VGP ECO MALL", "resp_nome": "Patricia Moreira da Silva Nascimento", "link": "https://lp.crmbonus.com/6Cosm7Y4GTsY2FL", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "13981910000144", "nome_loja": "KOP SP SHOPPING MOOCA", "resp_nome": "Ana Letícia Zodi", "link": "https://lp.crmbonus.com/Fl6bRURtJRbRkEZsi", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34300747000187", "nome_loja": "KOP SP SHOPPING WEST PLAZA", "resp_nome": "Walber Joaquim Minhoto dos Santos Lopes", "link": "https://lp.crmbonus.com/6CSNVfLtaRBxLNyb", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58168467000125", "nome_loja": "KOP DF BOTANIC MALL", "resp_nome": "cintia luz", "link": "https://lp.crmbonus.com/e3fWSys02tlaQN", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51659145000130", "nome_loja": "KOP VOLTA REDONDA SIDER SHOPPING", "resp_nome": "Ana Carolina de Souza Pereira", "link": "https://lp.crmbonus.com/iS384tUbIjRIzfe0rnF1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55962173000182", "nome_loja": "KOP RJ VOLTA REDONDA RUA 33", "resp_nome": "Kênia Neves Bezerra", "link": "https://lp.crmbonus.com/DLSXZVoGVeqAVx3uCImA", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48253122000116", "nome_loja": "KOP SP DOUBLE MALL BARUERI", "resp_nome": "Flavia Correa Salgado", "link": "https://lp.crmbonus.com/ONfi8giXRCQEx", "status": "Assinado"}, {"marca": "Kopenhagen", "cnpj": "10400081000170", "nome_loja": "KOP SHOPPING RIO CLARO", "resp_nome": "Luiz Carlos Damm Roncoli", "link": "https://lp.crmbonus.com/bTrQZwikat9", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "29875911000144", "nome_loja": "KOP RJ NOVA FRIBURGO", "resp_nome": "Rogério Gazoni", "link": "https://lp.crmbonus.com/9X09K3wcpgx8", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55068221000193", "nome_loja": "KOP GUARULHOS PARQUE SHOPPING MAIA", "resp_nome": "Carlos Regis Sgarlata dos Santos", "link": "https://lp.crmbonus.com/DjgnHGSxZ956xm", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46649896000135", "nome_loja": "KOP SAO CARLOS CENTRO", "resp_nome": "Felipe Moraes Barros Eburneo", "link": "https://lp.crmbonus.com/Vz6Ohz8r8uW4xxJL6f", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33699283000160", "nome_loja": "KOP ARARAQUARA SHOPPING JARAGUA", "resp_nome": "Felipe Moraes Barros Eburneo", "link": "https://lp.crmbonus.com/qSXLKGTEiF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09253131000155", "nome_loja": "KOP CURITIBA SHOPPING MUELLER", "resp_nome": "Elaine", "link": "https://lp.crmbonus.com/oErPZMct1w", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46649896000216", "nome_loja": "KOP SAO CARLOS SHOPPING CENTER IGUATEMI", "resp_nome": "Felipe Moraes Barros Eburneo", "link": "https://lp.crmbonus.com/ZAQZAD2QPiyPI", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "59718927000104", "nome_loja": "KOP PR CURITIBA CABRAL MUNHOZ DA ROCHA", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/olfa9a4BXWeh5hp2cd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61601610000135", "nome_loja": "KOP PR CURITIBA FLOW OPEN MALL", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/nzV5heklWTqqM", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46297622000124", "nome_loja": "KOP RJ SHOPPING PARK SUL", "resp_nome": "Gleiciane Ferreira Pereira Kosinski", "link": "https://lp.crmbonus.com/yMP8iK7iqrclHLwD9j", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57779600000117", "nome_loja": "KOP JL SHOPPING FOZ DO IGUACU", "resp_nome": "Marcelo Brito", "link": "https://lp.crmbonus.com/6va1nnLnfeAj8B72j7x", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46297622000124", "nome_loja": "KOP RJ SHOPPING PARK SUL", "resp_nome": "Gleiciane Ferreira Pereira Kosinski", "link": "https://lp.crmbonus.com/yMP8iK7iqrclHLwD9j", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10401203000143", "nome_loja": "KOP CAMPINAS CENTRO", "resp_nome": "Léa Marina Gragnani Zogbi", "link": "https://lp.crmbonus.com/n7ZAeYwOh2jJERu", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51616851000102", "nome_loja": "KOP SP ATIBAIA CENTRO", "resp_nome": "JOEL", "link": "https://lp.crmbonus.com/LFAOuJIMg68udW", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "45051896000176", "nome_loja": "KOP TAUBATE SHOPPING CENTER", "resp_nome": "Maria Cláudia Macedo Reis de Oliveira", "link": "https://lp.crmbonus.com/2swObawzYAMJbAv", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46124748000105", "nome_loja": "KOP RJ TAQUARA SHOPPING", "resp_nome": "Liliane da Silva Novy", "link": "https://lp.crmbonus.com/Q5XPrWPZIIihaJRdH", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09688036000184", "nome_loja": "KOP ARACATUBA CENTRO", "resp_nome": "Thaís Paola de souza", "link": "https://lp.crmbonus.com/M75ZZaiPHgs0z", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51742954000100", "nome_loja": "KOP SP RIO CLARO CENTRO", "resp_nome": "José Gabriel Guerra", "link": "https://lp.crmbonus.com/0tduODcGIp", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51324526000168", "nome_loja": "KOP SAO BERNARDO DO CAMPO VILA MARLENE", "resp_nome": "Tais Marotti", "link": "https://lp.crmbonus.com/EOlFNBzAoe11edG3xQtR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "32639669000114", "nome_loja": "KOP SHOPPING JOCKEY CURITIBA", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/Lp1VFiNmkwnAAE", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10578553000180", "nome_loja": "KOP BOTUCATU CENTRO", "resp_nome": "Rafael Maffia", "link": "https://lp.crmbonus.com/arh2mVUjB2KiVoj", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33699283000241", "nome_loja": "KOP ARARAQUARA VILA HARMONIA", "resp_nome": "Felipe Moraes Barros Eburneo", "link": "https://lp.crmbonus.com/v7MkBYMhPYVrVCR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09238979000105", "nome_loja": "KOP SHOPPING CURITIBA", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/HoK4ANInxmHzfWce", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33418248000126", "nome_loja": "KOP CAMPINAS SOUSAS", "resp_nome": "Flávia Oliveira", "link": "https://lp.crmbonus.com/fzL8RDUxnPDv9jJQO", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09253131000155", "nome_loja": "KOP CURITIBA SHOPPING MUELLER", "resp_nome": "Elaine", "link": "https://lp.crmbonus.com/oErPZMct1w", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33418269000141", "nome_loja": "KOP CAMPINAS SHOPPING PRADO BOULEVARD", "resp_nome": "Flavia", "link": "https://lp.crmbonus.com/uhlMhEvrfbpN3AZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55854512000107", "nome_loja": "KOP RJ SHOPPING ILHA PLAZA", "resp_nome": "Juliana Saraiva dos Anjos", "link": "https://lp.crmbonus.com/sMAD2Cmjn6p07RYIO", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51006944000107", "nome_loja": "KOP RJ NITEROI JARDIM ICARAI", "resp_nome": "Swian Martins Modesto", "link": "https://lp.crmbonus.com/WowsaXR5ucLZ6eq", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58052553000178", "nome_loja": "KOP RJ SHOPPING BANGU", "resp_nome": "Karla Regina Monteiro Campos", "link": "https://lp.crmbonus.com/hU4kZxjpOOsCJZMHo71", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55962173000182", "nome_loja": "KOP RJ VOLTA REDONDA RUA 33", "resp_nome": "Kênia Neves Bezerra", "link": "https://lp.crmbonus.com/DLSXZVoGVeqAVx3uCImA", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "19576911000190", "nome_loja": "KOP RJ AMERICAS SHOPPING", "resp_nome": "Joice Sousa Barbosa", "link": "https://lp.crmbonus.com/2Cf9qT0kKKDY", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55777002000183", "nome_loja": "KOP RJ EDIFICIO MANCHETE", "resp_nome": "VICENTE FARAH RABELLO CARVALHO DA COSTA", "link": "https://lp.crmbonus.com/j9hjCnPVJ6hi", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09239126000198", "nome_loja": "KOP CURITIBA PARK SHOPPING BARIGUI", "resp_nome": "Amanda", "link": "https://lp.crmbonus.com/cndVZQzaADOC10", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "15513804000161", "nome_loja": "KOP NITEROI ICARAI GAVIAO PEIXOTO", "resp_nome": "Rubens", "link": "https://lp.crmbonus.com/8podifeGzHrDwC", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55030069000150", "nome_loja": "KOP SP GUARULHOS VILA GALVAO", "resp_nome": "Carlos Regis Sgarlata dos Santos", "link": "https://lp.crmbonus.com/dR6cORrjqdGZJdSuq1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09239025000117", "nome_loja": "KOP PR HOSP ECO CURITIBA", "resp_nome": "KARLIANE CARVALHO OLIVEIRA", "link": "https://lp.crmbonus.com/R5outOmTSSWFJo2", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47896509000128", "nome_loja": "KOP SP JABOTICABAL", "resp_nome": "Felipe Moraes Barros Eburneo", "link": "https://lp.crmbonus.com/uEY59q31DS", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61706731000141", "nome_loja": "KOP SUMARE PARKCITY", "resp_nome": "KOP SUMARE PARKCITY", "link": "https://lp.crmbonus.com/zt1TE3qkDf9AAhBEZ7", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "65709210000107", "nome_loja": "KOP CAMPOS DO JORDAO", "resp_nome": "WALLACE DIOGO CORTES DA SILVA", "link": "https://lp.crmbonus.com/5Xdi0ShDNP1kFlZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31976003000199", "nome_loja": "KOP CAMPINAS BEST CENTER CHACARA PRIMAVERA", "resp_nome": "Léa Marina Graganani Zogbi", "link": "https://lp.crmbonus.com/NJycIiaQAThjN88", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33618680000160", "nome_loja": "KOP RJ RECREIO SHOPPING", "resp_nome": "Joice Sousa Barbosa", "link": "https://lp.crmbonus.com/UkNhqeSDSSj", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10233626000100", "nome_loja": "KOP SHOPPING PATIO BATEL", "resp_nome": "Camila Aparecida Bertanha Pereira", "link": "https://lp.crmbonus.com/OCeEUtW7jNsvKfs", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46384579000134", "nome_loja": "KOP SP CATHARINA MALL", "resp_nome": "sabrina rocha barreto", "link": "https://lp.crmbonus.com/cvOFeSnVqRC1C", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "65709210000107", "nome_loja": "KOP CAMPOS DO JORDAO", "resp_nome": "WALLACE DIOGO CORTES DA SILVA", "link": "https://lp.crmbonus.com/5Xdi0ShDNP1kFlZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "01393937000137", "nome_loja": "KOP NITEROI SHOPPING ITAIPU MULTICENTER", "resp_nome": "Sérgio", "link": "https://lp.crmbonus.com/1NCCIdlOX6k43bGq", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46297622000124", "nome_loja": "KOP RJ SHOPPING PARK SUL", "resp_nome": "Gleiciane Ferreira Pereira Kosinski", "link": "https://lp.crmbonus.com/yMP8iK7iqrclHLwD9j", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57620129000110", "nome_loja": "KOP SP VGP ECO MALL", "resp_nome": "Patricia Moreira da Silva Nascimento", "link": "https://lp.crmbonus.com/6Cosm7Y4GTsY2FL", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "12146845000179", "nome_loja": "KOP NITEROI SAO FRANCISCO", "resp_nome": "Tatiane Ferreira de Mattos", "link": "https://lp.crmbonus.com/ja535jEy0LzU3WfWlCm", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "19061513000130", "nome_loja": "KOP CABO FRIO SHOPPING PARK LAGOS", "resp_nome": "Raphaela", "link": "https://lp.crmbonus.com/q94JN0bVpAvRau5bJ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10233626000100", "nome_loja": "KOP SHOPPING PATIO BATEL", "resp_nome": "Camila Aparecida Bertanha Pereira", "link": "https://lp.crmbonus.com/OCeEUtW7jNsvKfs", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "18452190000143", "nome_loja": "KOP NITEROI ICARAI OTAVIO CARNEIRO", "resp_nome": "Daniele dos Santos Souza", "link": "https://lp.crmbonus.com/MfoQyWq4TOW2nTa", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55071296000123", "nome_loja": "KOP SP SUPERMERCADO TAUSTE CAMPINAS", "resp_nome": "Lívia", "link": "https://lp.crmbonus.com/FwCPDP9qQSOSm1Id", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55893950000184", "nome_loja": "KOP SP GUARULHOS BOSQUE MAIA", "resp_nome": "Carlos Regis Sgarlata dos Santos", "link": "https://lp.crmbonus.com/IZhj71J0z54", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61573121000117", "nome_loja": "KOP SP GUARULHOS NAGUMO ANEL VIARIO", "resp_nome": "Gabriel Antônio de Araújo", "link": "https://lp.crmbonus.com/2R1Tb2pw5GE01hr", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61488388000106", "nome_loja": "KOP RJ NITEROI HOSPITAL ICARAI", "resp_nome": "Rubens", "link": "https://lp.crmbonus.com/OnpbWBaCZps6E", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "28035891000130", "nome_loja": "KOP SP BOA VISTA SHOPPING", "resp_nome": "Eduardo Mancini gomiero", "link": "https://lp.crmbonus.com/oSsYfp3rLz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54370999000190", "nome_loja": "KOP SP BARUERI SHOP FLAMINGO", "resp_nome": "Flavia Correa Salgado", "link": "https://lp.crmbonus.com/C9LkT87lGX", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09239075000102", "nome_loja": "KOP CURITIBA PALLADIUM SHOPPING CENTER", "resp_nome": "Rodrigo Catarina", "link": "https://lp.crmbonus.com/Fh9Qxlo9re", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09238979000105", "nome_loja": "KOP SHOPPING CURITIBA", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/HoK4ANInxmHzfWce", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47151742000181", "nome_loja": "KOP GO FORMOSA", "resp_nome": "Karlyson Rodrigues Oliveira", "link": "https://lp.crmbonus.com/aeyVf8rsWzeiHL5G1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "56283228000190", "nome_loja": "KOP RJ NITEROI HOSPITAL CHN", "resp_nome": "Renata", "link": "https://lp.crmbonus.com/IunlUTrbmhI1yDR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55068277000148", "nome_loja": "KOP SP PARQUE SHOPPING BARUERI", "resp_nome": "Milton Aties Hechavarria", "link": "https://lp.crmbonus.com/M1m6Rrlawt", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "12255016000124", "nome_loja": "KOP SP SANTANA PARQUE SHOPPING", "resp_nome": "Walber Joaquim Minhoto dos Santos Lopes", "link": "https://lp.crmbonus.com/Pk2U5xoFKesp78B", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "28035891000130", "nome_loja": "KOP SP BOA VISTA SHOPPING", "resp_nome": "Eduardo Mancini gomiero", "link": "https://lp.crmbonus.com/oSsYfp3rLz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "67197494000117", "nome_loja": "KOP BA LUIS EDUARDO MAGALHAES", "resp_nome": "Jaqueline Araújo da silva", "link": "https://lp.crmbonus.com/NT0S8Rwz20", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "53820405000132", "nome_loja": "KOP SP AV NHAMBIQUARAS", "resp_nome": "WALDIR FERREIRA SANCHES", "link": "https://lp.crmbonus.com/bj0hnM7j8JTYhjXmLu", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48356529000179", "nome_loja": "KOP SP SHOPPING PENHA", "resp_nome": "HANNAH KUNTZ FERREIRA SANCHES", "link": "https://lp.crmbonus.com/bGFU3sa49tyN3qhF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "38069065000166", "nome_loja": "KOP SP TRIMAIS PLACES", "resp_nome": "ALECSANDRA FERREIRA SANCHES", "link": "https://lp.crmbonus.com/xJ5oHFfSFuFRF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46332161000183", "nome_loja": "KOP SP SHOPPING METRO ITAQUERA", "resp_nome": "THIAGO KUNTZ FERREIRA SANCHES", "link": "https://lp.crmbonus.com/gAIspk4jbOp", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57680261000206", "nome_loja": "KOP PRUDEN SHOPPING", "resp_nome": "Laís Maiara de Moraes Zago", "link": "https://lp.crmbonus.com/dnGUCKpb6AJa7B", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57680261000117", "nome_loja": "KOP SP PRES PRUDEN WASHINGTON LUIZ", "resp_nome": "Laís Maiara de Moraes Zago", "link": "https://lp.crmbonus.com/1S1foSpJNRpsWbtwX", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46297622000124", "nome_loja": "KOP RJ SHOPPING PARK SUL", "resp_nome": "Gleiciane Ferreira Pereira Kosinski", "link": "https://lp.crmbonus.com/yMP8iK7iqrclHLwD9j", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "11690297000180", "nome_loja": "KOP SP BROOKLIN PE JOSE ANT DOS SANTOS", "resp_nome": "ANA TERESA HELFENSTEIN", "link": "https://lp.crmbonus.com/4O0NBnj52Yo1a44YMa", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "07466269000107", "nome_loja": "KOP CATUAI SHOPPING LONDRINA", "resp_nome": "Rosana Cristina Batista da Silva", "link": "https://lp.crmbonus.com/cQ29kFPcqjU", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "18829914000125", "nome_loja": "KOP LONDRINA AURORA SHOPPING", "resp_nome": "Rosana Cristina Batista da Silva", "link": "https://lp.crmbonus.com/d6gNWu2yfWU3DK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "63908794000106", "nome_loja": "Kopenhagen Park Sul", "resp_nome": "Gleiciane Ferreira Pereira Kosinski", "link": "https://lp.crmbonus.com/dTUNEhaygFIBaBrlg", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55962173000183", "nome_loja": "Kopenhagen Black 33", "resp_nome": "KENIA NEVES BEZERRA", "link": "https://lp.crmbonus.com/WMWDX3jpwL1OrY", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34270014000147", "nome_loja": "KOP SP JARDIM MARAJOARA R MOLIERE", "resp_nome": "Marcia Regina Noberto Da Silva", "link": "https://lp.crmbonus.com/GDC1hs8DPToF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "19594375000155", "nome_loja": "KOP SP ALTO DE PINHEIROS", "resp_nome": "Renata Lara Campos Gomiero", "link": "https://lp.crmbonus.com/aIaj4MEfOEl", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09588488000194", "nome_loja": "KOP ATIBAIA JARDIM DO LAGO", "resp_nome": "Viviani de Moraes", "link": "https://lp.crmbonus.com/XqYsP0iaKO", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08229889000276", "nome_loja": "KOP SP BROOKLIN PAULISTA", "resp_nome": "ANA T HELFENSTEIN", "link": "https://lp.crmbonus.com/3mn3CEazRNn4jL", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "63094227000163", "nome_loja": "KOP SP ARUJA BOULEVARD DAS PALMEIRAS", "resp_nome": "Roseli Rovere", "link": "https://lp.crmbonus.com/WclzFXbH5R", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "19786830000203", "nome_loja": "KOP PALLADIUM SHOPPING CENTER PONTA GROSSA", "resp_nome": "Paola Sandri Antunes Giostri", "link": "https://lp.crmbonus.com/NnCy2OGun5NLMdd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "53107840000114", "nome_loja": "KOP MG BELO HORIZONTE OURO PRETO", "resp_nome": "Nathália de Souza Mariotto", "link": "https://lp.crmbonus.com/FzQ53Xggn2U7aomi8", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34453865000125", "nome_loja": "KOP DOIS VIZINHOS CENTRO", "resp_nome": "Márcia de Souza Grando", "link": "https://lp.crmbonus.com/nTmZNNGpl8thWMqY", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "26644079000187", "nome_loja": "KOP RJ SHOPPING ILHA PLAZA", "resp_nome": "ALEXANDRE AUGUSTO GONÇALVES AFFONSO", "link": "https://lp.crmbonus.com/UlRDGuQk8UOCdsMc5PSD", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "26644079000187", "nome_loja": "KOP RJ SHOPPING ILHA PLAZA", "resp_nome": "ALEXANDRE AUGUSTO GONÇALVES AFFONSO", "link": "https://lp.crmbonus.com/UlRDGuQk8UOCdsMc5PSD", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "03469060000146", "nome_loja": "KOP RJ TIJUCA SOARES DA COSTA", "resp_nome": "ALEXANDRE AUGUSTO GONÇALVES AFFONSO", "link": "https://lp.crmbonus.com/GsECDGXp8S7KvIQs", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51733510000109", "nome_loja": "KOP MG CONSELHEIRO LAFAIETE", "resp_nome": "Bianca Kelly dos Santos Diniz", "link": "https://lp.crmbonus.com/PWr1nlv5BCmnjaIUx", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "44807155000100", "nome_loja": "KOP SP BRAGANCA GARDEN", "resp_nome": "Igor Augusto Teixeira Scheid", "link": "https://lp.crmbonus.com/dCOX8OY41cI0Y", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "07080759000170", "nome_loja": "KOP SP SHOPP PATIO PAULISTA PISO PARAISO", "resp_nome": "GRAZIELE ALVES RODRIGUES", "link": "https://lp.crmbonus.com/R7mbOlYf8c87YP6HG", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08673571000280", "nome_loja": "KOP FLORIANOPOLIS PRIMAVERA OFFICE", "resp_nome": "Thamiris Rogério dos Anjos", "link": "https://lp.crmbonus.com/QUljmZZyVWPqPJ0ZYpob", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08673571000107", "nome_loja": "KOP VILLA ROMANA SHOPPING", "resp_nome": "Thamiris Rogério dos Anjos", "link": "https://lp.crmbonus.com/nHRsfoq9mYuiiYV", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "07080759000251", "nome_loja": "KOP SP HOSPITAL OSWALDO CRUZ", "resp_nome": "JESSICA BARBOSA DOS SANTOS", "link": "https://lp.crmbonus.com/d0LvyQK0Ew5xcZUM", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57736311000130", "nome_loja": "KOP SP SAO PAULO VERBO DIVINO", "resp_nome": "danielle carvalho", "link": "https://lp.crmbonus.com/vc6a8AGvpBe", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08240498000171", "nome_loja": "KOP SP VILA MADALENA", "resp_nome": "Taynara Bastos", "link": "https://lp.crmbonus.com/MPukMukEtCfFY", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33288790000101", "nome_loja": "KOP SP ALTO DE SANTANA", "resp_nome": "Vanessa de carvalho Silva", "link": "https://lp.crmbonus.com/MoFDpiNr3wDWh", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34696325000172", "nome_loja": "KOP BH HOSPITAL MATER DEI CONTORNO", "resp_nome": "Christiane Paulucci Saliba", "link": "https://lp.crmbonus.com/6WM51G3MQmT", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "23643399000124", "nome_loja": "KOP RJ CENTRO SENADOR DANTAS", "resp_nome": "Ana Lúcia Fernandes da Silva", "link": "https://lp.crmbonus.com/TtFGL4oQvfaH4", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09578997000136", "nome_loja": "KOP SP SANTANA BRAZ LEME", "resp_nome": "Ivaneide Silva Oliveira", "link": "https://lp.crmbonus.com/QEEUJ4JLuTZVD5NIhKK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57702753000166", "nome_loja": "KOP SP RUA PIRAPORA", "resp_nome": "Fernanda Alves", "link": "https://lp.crmbonus.com/AO0xjZqleuPiRGCjmoj", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "37594823000100", "nome_loja": "KOP RIBEIRAO PRETO JARDIM CANADA", "resp_nome": "Cássia de Oliveira Rocha", "link": "https://lp.crmbonus.com/6k1jj0IvAWp5", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "28902751000201", "nome_loja": "KOP SHOPPING IGUATEMI CAMPINAS", "resp_nome": "Jéssica Thais Ferreira Olivieri", "link": "https://lp.crmbonus.com/FT41fT3INKa5yDZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "28902751000112", "nome_loja": "KOP CAMPINAS PARQUE DOM PEDRO SHOP", "resp_nome": "Patrícia Pereira Cucato", "link": "https://lp.crmbonus.com/ItTqCPOk9yhYnyBl5", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "12420169000180", "nome_loja": "KOP SP SHOPPING HIGIENOPOLIS", "resp_nome": "Edevanilde Mendes da Silva", "link": "https://lp.crmbonus.com/vjCV1AWfEJtE", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "18563393000107", "nome_loja": "KOP SHOPPING IGUATEMI RIBEIRAO PRETO", "resp_nome": "Emanuelle Massoneto", "link": "https://lp.crmbonus.com/wNdE1cDeV6MJVx", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09215387000178", "nome_loja": "KOP RIBEIRAO SHOPPING", "resp_nome": "Maria Telma Malaguti", "link": "https://lp.crmbonus.com/KolY9UcBSjgydk4T", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "36447897000143", "nome_loja": "KOP VINHEDO CENTRO", "resp_nome": "Sauane Oliveira Dos Santos", "link": "https://lp.crmbonus.com/4F54XqVoMsTvW1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57922013000135", "nome_loja": "KOP MOGI DAS CRUZES ASSAI MOGILAR", "resp_nome": "Mario Jarbas Barreto Filho", "link": "https://lp.crmbonus.com/8MgaOP7HXZnu", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54836545000161", "nome_loja": "KOP SP MOGI DAS CRUZES SHOP URUPEMA", "resp_nome": "Mario Jarbas Barreto Filho", "link": "https://lp.crmbonus.com/qhvMBo7usMcCgZ6HKW", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10546336000108", "nome_loja": "KOP TERESINA RIVERSIDE SHOPPING", "resp_nome": "REGIS CAMPELO LIMA", "link": "https://lp.crmbonus.com/qVaP5p21Oe", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10664458000107", "nome_loja": "KOP NATAL SHOPPING MIDWAY MALL", "resp_nome": "VIRGINIA AZEVEDO DE MELO MARIANI GUERREIRO", "link": "https://lp.crmbonus.com/a7CgxvufExfvVGa", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722000115", "nome_loja": "KOP PRAIA GRANDE LITORAL PLAZA SHOPPING", "resp_nome": "Karina Santana", "link": "https://lp.crmbonus.com/Vq1mQJ2ROM4edt", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "06538721000136", "nome_loja": "KOP NATAL SHOPPING", "resp_nome": "VIRGINIA AZEVEDO DE MELO MARIANI GUERREIRO", "link": "https://lp.crmbonus.com/P7ZMCifr4miaqHLeej", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "03917111000155", "nome_loja": "KOP NATAL PETROPOLIS", "resp_nome": "VIRGINIA AZEVEDO DE MELO MARIANI GUERREIRO", "link": "https://lp.crmbonus.com/ZKDp2hpsKWyR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46502656000103", "nome_loja": "KOP ES COLATINA CENTRO", "resp_nome": "Felipe Nippes", "link": "https://lp.crmbonus.com/X88f23Oix0oxvc", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31833089000109", "nome_loja": "KOP POA BARRA SHOPPING SUL", "resp_nome": "andressa matos", "link": "https://lp.crmbonus.com/nGQH3dT1nx7vcNIg", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "34359090000123", "nome_loja": "KOP PARK SHOPPING CANOAS", "resp_nome": "andressa matos", "link": "https://lp.crmbonus.com/iPE4qtbMK6gEHIroW", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "47201560000178", "nome_loja": "KOP PI SHOPPING RIO POTY", "resp_nome": "Olga", "link": "https://lp.crmbonus.com/2b9t6oysePjONSTkatZy", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "33772909000117", "nome_loja": "KOP RONDON PLAZA SHOPPING", "resp_nome": "Carlos Eduardo Caleman", "link": "https://lp.crmbonus.com/At4ymnwM83QzB", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31432775000160", "nome_loja": "KOP PARQUE SHOPPING MACEIO", "resp_nome": "Andréa Cassiano dos Santos", "link": "https://lp.crmbonus.com/CscwPwhFLWDUwH", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55430325000104", "nome_loja": "KOP SP ALTO DO IPIRANGA", "resp_nome": "LUIS KAZUNOBU AKATSUKA", "link": "https://lp.crmbonus.com/HJ2rB0QXNqcBK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "27094001000107", "nome_loja": "KOP SAO JOSE DO RIO PRETO SHOPP IGUATEMI", "resp_nome": "Leticia Baldoino Fermino", "link": "https://lp.crmbonus.com/fs9qmZeASf3OBKLb", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "01736244000280", "nome_loja": "KOP MACEIO JATIUCA", "resp_nome": "André Cassiano dos Santos", "link": "https://lp.crmbonus.com/fHPOzMawVCi6U4aPZHS", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "21428541000195", "nome_loja": "KOP RJ CENTRO GONCALVES DIAS", "resp_nome": "Mariana Teixeira Frassetto Granado", "link": "https://lp.crmbonus.com/npNGT3SP9hdCjcRAVk", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08986873000127", "nome_loja": "KOP RJ SHOPPING VIA BRASIL", "resp_nome": "Mariana Teixeira Frassetto Granado", "link": "https://lp.crmbonus.com/zvRxGc0FsNc", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "14743139000130", "nome_loja": "KOP RJ BOULEVARD CIDADE NOVA", "resp_nome": "Andrea Troccoli Noronha Macedo Acha", "link": "https://lp.crmbonus.com/UfgDuVqa5y00Y", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "15040391000145", "nome_loja": "KOP RJ BOULEVARD RIO SHOPPING", "resp_nome": "ANDREA TROCCOLI NORONHA MACEDO ACHA", "link": "https://lp.crmbonus.com/gIW9dJsdJefxO", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "17030803000272", "nome_loja": "KOP SAO JOSE DOS CAMPOS VALE SUL SHOPP", "resp_nome": "Ana Lucia de Almeida", "link": "https://lp.crmbonus.com/YzWnzrQ6O2RVhN8ipf", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08874205000108", "nome_loja": "KOP MOGI SHOPPING", "resp_nome": "Ana Lucia de Almeida", "link": "https://lp.crmbonus.com/iUrTdvpE8fmO5agom", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08229889000195", "nome_loja": "KOP SP BROOKLIN FLORIDA", "resp_nome": "Jussara faria", "link": "https://lp.crmbonus.com/nq49T0toLresK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "01736244000108", "nome_loja": "KOP MACEIO SHOPPING", "resp_nome": "Andrea Cassiano dos Santos", "link": "https://lp.crmbonus.com/PT59MMPGeZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "11720681000107", "nome_loja": "Kopenhagen 11.720.681/0001-07", "resp_nome": "Lílian Galdino dos Santos", "link": "https://lp.crmbonus.com/jnJzbZAD02ulKvwkpjZ", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08773365000160", "nome_loja": "KOP GUARUJA SHOPPING LA PLAGE", "resp_nome": "Silvana Vieira de Carvalho", "link": "https://lp.crmbonus.com/UjgqNtnJKVDvW", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "12402354000141", "nome_loja": "KOP PETROPOLIS ITAIPAVA SHOPPING", "resp_nome": "Daniel Alves de Andrade", "link": "https://lp.crmbonus.com/p82j1HCknHQCsA", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722000620", "nome_loja": "KOP BERTIOGA SHOPPING RIVIERA", "resp_nome": "Ana Leticia de Jesus Santos", "link": "https://lp.crmbonus.com/rO1u8z868SgoXnjKQuR", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61089174000167", "nome_loja": "KOP SC ARARANGUA", "resp_nome": "Neiza Costa", "link": "https://lp.crmbonus.com/kZllFEKbsKmGnU", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58215145000190", "nome_loja": "KOP SHOPPING CAMPO GRANDE", "resp_nome": "bruna vicari", "link": "https://lp.crmbonus.com/CeZpvpaXF2r8kkkj2j", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "66806011000171", "nome_loja": "KOP SP VOTUPORANGA CENTRO", "resp_nome": "Marcela Pignatari", "link": "https://lp.crmbonus.com/ph1rZhBxLzdrRA7dzvr", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "52603928000164", "nome_loja": "KOP RJ FLAMENGO", "resp_nome": "Luciano Ramos Rolemberg", "link": "https://lp.crmbonus.com/jHC3yoFjdfR89", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "52815028000180", "nome_loja": "KOP PARKSHOPPING SAO CAETANO", "resp_nome": "Lilian Souza", "link": "https://lp.crmbonus.com/WE2oQ78LRglz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57414381000172", "nome_loja": "KOP SC TUBARAO FAROL SHOPPING", "resp_nome": "Thiago Caporal", "link": "https://lp.crmbonus.com/INPET39KCI24SQ0TOrv", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "29107408000149", "nome_loja": "KOP TERESOPOLIS SHOPPING CENTER", "resp_nome": "MONICA MONTENEGRO DE OLIVEIRA", "link": "https://lp.crmbonus.com/DjBnCubmHbrusY9ac", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "38259599000155", "nome_loja": "KOP RJ LEBLON ATAULFO DE PAIVA 135", "resp_nome": "ALINE PATRICIO BANDEIRA", "link": "https://lp.crmbonus.com/Axg3SAKS1VR5JpgllA", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "15050984000192", "nome_loja": "KOP SP SHOPPING IGUATEMI JK", "resp_nome": "Vanuza Bastos", "link": "https://lp.crmbonus.com/IfmJxi8KC2hemulF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55067226000100", "nome_loja": "KOP RJ NOSSA SENHORA DE COPACABANA", "resp_nome": "Clariana Oliveira Santos da Silva", "link": "https://lp.crmbonus.com/31KbYJF3f0VocKpXID", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48240205000170", "nome_loja": "KOP SP AVARE", "resp_nome": "ANNE THERESE HELENE MARIE DERAMOND PROFFIT", "link": "https://lp.crmbonus.com/98eiW8e7ZYgI52e4kz", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08285019000133", "nome_loja": "KOP SP SHOPPING SP MARKET", "resp_nome": "Janaina Barbosa Nascimento", "link": "https://lp.crmbonus.com/mi4F1aq9r7hBCEY9buH", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08886122000139", "nome_loja": "KOP SP CAMPO BELO VIEIRA DE MORAES", "resp_nome": "Janaina Barbosa Nascimento", "link": "https://lp.crmbonus.com/fbFmwjnfsX8PU0wUyl44", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55066718000172", "nome_loja": "KOP SP SUZANO SHOPPING", "resp_nome": "Bianca Campanille D Angelo", "link": "https://lp.crmbonus.com/AYMNW2xnfvK3nY1F", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48984995000280", "nome_loja": "KOP SHOPPING JUNDIAI", "resp_nome": "Maria Auxiliadora da Silva Souza", "link": "https://lp.crmbonus.com/dzqomAgJ9C4pd7Z", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10456074000190", "nome_loja": "KOP SP CAMPO BELO ANTONIO DE MAC SOARES", "resp_nome": "Janaina Barbosa Do Nascimento", "link": "https://lp.crmbonus.com/jLS6XqacY1QL1E10a", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51329520000183", "nome_loja": "KOP SP IPIRANGA BOM PASTOR", "resp_nome": "Alana rocha Barbosa", "link": "https://lp.crmbonus.com/h05YHKGIQ9i", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "53042030000127", "nome_loja": "KOP SCS AV GOIAS", "resp_nome": "Fernanda Santiago Marzagão Cassaguerra", "link": "https://lp.crmbonus.com/mN89mcwRga6h9uMuEnF", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "51232255000110", "nome_loja": "KOP RJ PENINSULA OPEN MALL", "resp_nome": "ERYCK AZEVEDO BACELAR", "link": "https://lp.crmbonus.com/PbuK5ALiHhv9Jwy7l", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "56210793000128", "nome_loja": "KOP PR CASCAVEL SHOPPING CATUAI", "resp_nome": "Andressa Abreu de Almeida Duarte", "link": "https://lp.crmbonus.com/wfiybc8BY2BVPp", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48942372000163", "nome_loja": "KOP SP IPIRANGA", "resp_nome": "Oscar Ribeiro Junior", "link": "https://lp.crmbonus.com/VsuKSmrmGZfaT", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54281913000152", "nome_loja": "KOP SC BLUMENAU SHOPPING H", "resp_nome": "Francielle Eugenio", "link": "https://lp.crmbonus.com/poaXRf4YBG2ojjq", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "52888875000175", "nome_loja": "KOP SP CAMPINAS BARAO GERALDO CID", "resp_nome": "Ledline Eloy", "link": "https://lp.crmbonus.com/I1VvYrEf4Id", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "31442991000196", "nome_loja": "KOP DOURADOS CENTRO", "resp_nome": "Fabio Kenji Ueno Gil", "link": "https://lp.crmbonus.com/BoH3XQOnAlY8LXxH3qpw", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "48984995000107", "nome_loja": "KOP CAMPINAS GALLERIA SHOPPING", "resp_nome": "Ledline Eloy", "link": "https://lp.crmbonus.com/fMYylLKOsLQMjOXIRE", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "45609549000116", "nome_loja": "KOP SP ALPHAVILLE CAMPINAS", "resp_nome": "Pedro Dizaró Junior", "link": "https://lp.crmbonus.com/lyQblL6uo2h", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58882178000193", "nome_loja": "KOP SP ANHANGUERA CAJAMAR SHOPPING", "resp_nome": "PRICILA PREM CAVALCANTE MANSI", "link": "https://lp.crmbonus.com/wP4UskNWM6ezhd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "19594374000155", "nome_loja": "Kopenhagen 19.594.374/0001-55", "resp_nome": "Renata Lara Campos Gomiero", "link": "https://lp.crmbonus.com/xtEdP5R9S9", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "52457515000119", "nome_loja": "KOP SP CAMPINAS JD CHAPADAO CASTELO", "resp_nome": "Maristela Salvagnini", "link": "https://lp.crmbonus.com/aEDQP1ZJHp", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "54836545000161", "nome_loja": "KOP SP MOGI DAS CRUZES SHOP URUPEMA", "resp_nome": "Mario Jarbas Barreto Filho", "link": "https://lp.crmbonus.com/qhvMBo7usMcCgZ6HKW", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57922013000135", "nome_loja": "KOP MOGI DAS CRUZES ASSAI MOGILAR", "resp_nome": "Mario Jarbas Barreto Filho", "link": "https://lp.crmbonus.com/8MgaOP7HXZnu", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08773365000241", "nome_loja": "KOP SANTOS GONZAGA", "resp_nome": "Angela Carvalho de Aragão", "link": "https://lp.crmbonus.com/tKaXhQdUXN0Ojot", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722001278", "nome_loja": "KOP SP SANTOS KOP PATIO IPORANGA", "resp_nome": "Jessica de Jesus dos Santos", "link": "https://lp.crmbonus.com/RAkQUVHO8LJNw", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "46133968000197", "nome_loja": "KOP SP AMPARO", "resp_nome": "Francine Oliveira", "link": "https://lp.crmbonus.com/XIIttBiXAQrGTC", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722000549", "nome_loja": "KOP CARAGUATATUBA SERRA MAR PRAIA SHOPP", "resp_nome": "Viviane De Oliveira Nusa", "link": "https://lp.crmbonus.com/2EtgZGFiv5svVGB", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "58909981000174", "nome_loja": "KOP SC CRICIUMA NACOES SHOPPING", "resp_nome": "Kamila de Medeiros Delfino", "link": "https://lp.crmbonus.com/ymBm89STE9V8tefP", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "57817042000137", "nome_loja": "KOP SP RUA TUIUTI", "resp_nome": "Jackeline de Lima Rezende", "link": "https://lp.crmbonus.com/ZYFt3l4AA7SbOdaA", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "55443075000139", "nome_loja": "KOP SP VILA BEATRIZ", "resp_nome": "Lucas de Laia Fernandes de Sousa", "link": "https://lp.crmbonus.com/LXlbj9IpXD", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "00386674000176", "nome_loja": "KOP SP CAMBUCI LINS DE VASCONCELOS", "resp_nome": "Lucila Ramos Gianetti", "link": "https://lp.crmbonus.com/OFiCxXUG21yvi", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "08384622000172", "nome_loja": "KOP SP ACLIMACAO", "resp_nome": "Lucila Ramos Gianetti", "link": "https://lp.crmbonus.com/tyfFm6DVilK", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "09239067000158", "nome_loja": "KOP CURITIBA SHOPPING NOVO BATEL", "resp_nome": "Rodrigo Caterina", "link": "https://lp.crmbonus.com/t1WC1PQq94ScSy1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "02746722000972", "nome_loja": "KOP SP MARES ILHABELA", "resp_nome": "Michelly Lima Anastacio", "link": "https://lp.crmbonus.com/32VKeoRh0v0ffeX", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "45377813000133", "nome_loja": "KOP SP CATANDUVA", "resp_nome": "Rodrigo curtolo", "link": "https://lp.crmbonus.com/rwPmvUvJ01N6", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "22035707000176", "nome_loja": "KOP FLORIANOPOLIS BEIRAMAR SHOPPING", "resp_nome": "Michel Dos Santos da Costa", "link": "https://lp.crmbonus.com/vUQpB4ppoSy9Y9pd", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "61576345000182", "nome_loja": "KOP MG SETE LAGOAS", "resp_nome": "Matheus Campolina França", "link": "https://lp.crmbonus.com/bLDlveJHTvuDlDFpClR7", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "36447897000143", "nome_loja": "KOP VINHEDO CENTRO", "resp_nome": "Sauane Oliveira Dos Santos", "link": "https://lp.crmbonus.com/4F54XqVoMsTvW1", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10613092000139", "nome_loja": "KOP RJ NORTE SHOPPING PISO 1", "resp_nome": "Liliane Gomes Batista", "link": "https://lp.crmbonus.com/wtU1cgXQbveTN3fD", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "62893027000108", "nome_loja": "KOP DF BRASILIA GAMA MALL", "resp_nome": "Virginia Moreira de Souza", "link": "https://lp.crmbonus.com/hNyRHpmYS8eB", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "44425730000100", "nome_loja": "KOP AL MACEIO JOSE FREIRE", "resp_nome": "Rodrigo de Barros Paes", "link": "https://lp.crmbonus.com/28TevLUesJy4v5keTm", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "50027296000102", "nome_loja": "KOP PR CURITIBA SHOP JARDIM DAS AME", "resp_nome": "Maick William Guimarães Baptista", "link": "https://lp.crmbonus.com/GZYhi5l5cJt", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "10986835000116", "nome_loja": "KOP ASSIS", "resp_nome": "Luana Roberta de Souza Sant ana", "link": "https://lp.crmbonus.com/Ndg7uHAKOD4Pje1xIs6K", "status": "Assinatura pendente"}, {"marca": "Kopenhagen", "cnpj": "64728216000150", "nome_loja": "KOP SP POMPEIA DESEMBARGADOR DO VALE", "resp_nome": "Paula Fernandes", "link": "https://lp.crmbonus.com/qD4ZypUOxN", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57679481000120", "nome_loja": "BC PI PARNAIBA CENTRO", "resp_nome": "Genésio ferreira da ponte neto", "link": "https://lp.crmbonus.com/jn8Nq55FzMaK7", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "64337741000145", "nome_loja": "BC MG SALINAS PATIO SALINAS", "resp_nome": "Maria Luiza Amaral Mendes Barbosa", "link": "https://lp.crmbonus.com/hCWj9JcU7SjaR", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "50792397000170", "nome_loja": "CBC PALHOCA VIA CATARINA SHOPPING", "resp_nome": "CHRISTINE SOARES RAMOS", "link": "https://lp.crmbonus.com/ohc3e60jz3YFn", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57495981000102", "nome_loja": "BC SP ITAPIRA CENTRO", "resp_nome": "tatiana andreza barbosa chieratto", "link": "https://lp.crmbonus.com/fCqKTweFzxAysdJtXp", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000358", "nome_loja": "CBC SAO VICENTE SHOPPING BRISAMAR", "resp_nome": "Stephanie Riviane Freire Lima", "link": "https://lp.crmbonus.com/r79ngFGkAa", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "15273913000159", "nome_loja": "CBC SHOPPING ESTACAO BH", "resp_nome": "Christiane Paulucci Saliba", "link": "https://lp.crmbonus.com/M1tul2wnnQpbh", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000609", "nome_loja": "CBC SANTOS SHOPPING PRAIAMAR", "resp_nome": "Patricia da Silva brito", "link": "https://lp.crmbonus.com/jOnoepFZuheSQylwi5", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000439", "nome_loja": "CBC MAUA PLAZA SHOPPING", "resp_nome": "Roseane da Silva", "link": "https://lp.crmbonus.com/HNj0plc38Jz1", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57069787000165", "nome_loja": "BC BH BARRO PRETO", "resp_nome": "Magno Davi Nepomuceno", "link": "https://lp.crmbonus.com/4x8xA0mYVsBWKUANi3", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000943", "nome_loja": "BC SP SAO VICENTE ROLDAO ATACADISTA", "resp_nome": "Thaissa Vieira Santana", "link": "https://lp.crmbonus.com/sv6j1tJNWo0v2HbRFg", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "58332681000175", "nome_loja": "BC PR CASCAVEL SHOPPING JL", "resp_nome": "Thiego Secchi Sobczak", "link": "https://lp.crmbonus.com/01nf5yIiIvu0MpHrgNGv", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263001168", "nome_loja": "BC SP BERTIOGA TENDA ATACADO", "resp_nome": "Géssica santos chaves", "link": "https://lp.crmbonus.com/fBYLszF0NKUe", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000196", "nome_loja": "BC SUPER CENTRO BOQUEIRAO SANTOS", "resp_nome": "GABRIELLE ESTHEFANI DA SILVA FERREIRA", "link": "https://lp.crmbonus.com/hMSuqtiDFoUN4", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000862", "nome_loja": "CBC SANTOS ASSAI ANA COSTA", "resp_nome": "Laila Aparecida Jesus dos Santos", "link": "https://lp.crmbonus.com/BnlIdRjgJivcuB8gj6I", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000277", "nome_loja": "CBC SANTOS GONZAGA ANA COSTA", "resp_nome": "Gustavo Pereira Nogueira", "link": "https://lp.crmbonus.com/SYnRKydgV7RzY5sOl", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "55402604000156", "nome_loja": "BC PR LARANJEIRAS DO SUL CENTRO", "resp_nome": "Thiego Secchi Sobczak", "link": "https://lp.crmbonus.com/pAhnbq2ev0KOWAxRLRm", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57495981000102", "nome_loja": "BC SP ITAPIRA CENTRO", "resp_nome": "tatiana andreza barbosa chieratto", "link": "https://lp.crmbonus.com/fCqKTweFzxAysdJtXp", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "17030803000191", "nome_loja": "CBC MOGI DAS CRUZES CENTRO", "resp_nome": "Ana Lucia de Almeida", "link": "https://lp.crmbonus.com/6zpfTQfDWbkZd41", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57495981000102", "nome_loja": "BC SP ITAPIRA CENTRO", "resp_nome": "tatiana andreza barbosa chieratto", "link": "https://lp.crmbonus.com/fCqKTweFzxAysdJtXp", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "19432839000127", "nome_loja": "CBC PELOTAS XV DE NOVEMBRO", "resp_nome": "Andréa Telesca Bicca", "link": "https://lp.crmbonus.com/mIzD5oCJQmI7s", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "53171614000100", "nome_loja": "BC JUIZ DE FORA MARECHAL DEODORO", "resp_nome": "Thiago Taboada", "link": "https://lp.crmbonus.com/voZ9Ts9taG2qzNE8y", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "53157960000126", "nome_loja": "BC JUIZ DE FORA SHOP JARDIM NORTE", "resp_nome": "Thiago Taboada", "link": "https://lp.crmbonus.com/LaV1cumdhEmSl3uP59", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "53114340000100", "nome_loja": "BC JUIZ DE FORA INDEPENDENCIA SHOP", "resp_nome": "Thiago Taboada", "link": "https://lp.crmbonus.com/zRIRaC0f2RuU", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "53114326000106", "nome_loja": "BC JUIZ DE FORA CENTRO HALFED", "resp_nome": "Thiago Taboada de Andrade", "link": "https://lp.crmbonus.com/2lcZtogL3ofK", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "16868698000102", "nome_loja": "Brasil Cacau 16.868.698/0001-02", "resp_nome": "MONICA MONTENEGRO DE OLIVEIRA", "link": "https://lp.crmbonus.com/3w6Ftd8EkRlsSVvixj", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "16868698000100", "nome_loja": "CBC TERESOPOLIS", "resp_nome": "MONICA MONTENEGRO DE OLIVEIRA", "link": "https://lp.crmbonus.com/tNTEQaQ5N54i1YGdVq2", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "52359128000140", "nome_loja": "BC SP PEDERNEIRAS CENTRO", "resp_nome": "IGOR FERREIRA BAGARELLI", "link": "https://lp.crmbonus.com/7SRFE9wPMJvG09", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11284263000358", "nome_loja": "CBC SAO VICENTE SHOPPING BRISAMAR", "resp_nome": "Stephanie Riviane Freire Lima", "link": "https://lp.crmbonus.com/r79ngFGkAa", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "57069787000165", "nome_loja": "BC BH BARRO PRETO", "resp_nome": "Magno Davi Nepomuceno", "link": "https://lp.crmbonus.com/4x8xA0mYVsBWKUANi3", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "48512563000195", "nome_loja": "CBC RO ARIQUEMES", "resp_nome": "LUANA SANTANA DO NASCIMENTO", "link": "https://lp.crmbonus.com/g4KFrXGUEXc77", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "11002919000130", "nome_loja": "BC GUARAPUAVA", "resp_nome": "Rafaela da silva oliveira", "link": "https://lp.crmbonus.com/cY6EqRuo7RTCR1x1PJkb", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "36460085000138", "nome_loja": "BC BRASILIA SHOPPING PATIO BRASIL", "resp_nome": "Vanei Maria Aparecida da Silva Neres", "link": "https://lp.crmbonus.com/4drvH8dDVPH8FAp", "status": "Assinatura pendente"}, {"marca": "Brasil Cacau", "cnpj": "53516362000104", "nome_loja": "BC MG ALFENAS", "resp_nome": "Diego Gomes", "link": "https://lp.crmbonus.com/PTcXXZe7l0qYoo", "status": "Assinatura pendente"}];
+
+const searchEl = document.getElementById('search');
+const outputEl = document.getElementById('output');
+const shellEl = document.getElementById('searchShell');
+const metaRow = document.getElementById('metaRow');
+const resultCount = document.getElementById('resultCount');
+const brandFilters = document.getElementById('brandFilters');
+
+let activeBrand = 'all';
+
+document.getElementById('totalBase').textContent = DATA.length;
+document.getElementById('totalBaseFooter').textContent = DATA.length;
+document.getElementById('signedCount').textContent = DATA.filter(d => d.status === 'Assinado').length;
+document.getElementById('pendingCount').textContent = DATA.filter(d => d.status !== 'Assinado').length;
+
+brandFilters.addEventListener('click', (e) => {
+  const btn = e.target.closest('.brand-chip');
+  if(!btn) return;
+  activeBrand = btn.dataset.brand;
+  [...brandFilters.children].forEach(c => c.classList.toggle('active', c === btn));
+  doSearch();
+});
+
+function normalize(str){
+  return (str || '').toString()
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[.\-\/]/g,'');
+}
+
+function formatCnpj(digits){
+  if(!digits) return '—';
+  const d = digits.toString().replace(/\D/g,'');
+  if(d.length !== 14) return digits;
+  return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+}
+
+function highlight(text, query){
+  if(!query) return text;
+  const norm = normalize(text);
+  const q = normalize(query);
+  const idx = norm.indexOf(q);
+  if(idx === -1 || !q) return text;
+  // map back approximate position (safe enough for display since we strip only punctuation)
+  let plain = text.toString();
+  let count = 0, start = -1, end = -1;
+  for(let i=0, j=0; i<plain.length; i++){
+    if(/[.\-\/]/.test(plain[i])) continue;
+    if(j === idx) start = i;
+    if(j === idx + q.length - 1){ end = i+1; break; }
+    j++;
+  }
+  if(start === -1 || end === -1) return text;
+  return plain.slice(0,start) + '<mark>' + plain.slice(start,end) + '</mark>' + plain.slice(end);
+}
+
+function renderIdle(){
+  outputEl.innerHTML = '<div class="idle">Comece digitando acima para localizar a proposta da sua loja.</div>';
+  metaRow.style.display = 'none';
+  shellEl.classList.remove('active');
+}
+
+function renderEmpty(query){
+  outputEl.innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">?</div>
+      <div><b>Nada encontrado</b> para "${query}"</div>
+      <div style="margin-top:6px;">Essa loja pode ainda estar em conferência manual. Fale com o CS responsável para verificar.</div>
+    </div>`;
+  metaRow.style.display = 'flex';
+  resultCount.innerHTML = '<b>0</b> resultados';
+}
+
+function statusBadge(status){
+  if(status === 'Assinado') return '<span class="badge badge-signed">Assinado</span>';
+  if(status === 'Não aplicável') return '<span class="badge badge-na">Não aplicável</span>';
+  return '<span class="badge badge-pending">Pendente</span>';
+}
+
+function renderResults(results, query){
+  metaRow.style.display = 'flex';
+  resultCount.innerHTML = `<b>${results.length}</b> resultado${results.length>1?'s':''}`;
+  outputEl.innerHTML = '<div class="results">' + results.map(r => `
+    <div class="card">
+      <div class="card-info">
+        <span class="brand-tag">${r.marca}</span>
+        <div class="card-store">${highlight(r.nome_loja || 'Loja sem nome cadastrado', query)}</div>
+        <div class="card-meta">
+          <span>CNPJ: ${highlight(formatCnpj(r.cnpj), query)}</span>
+          <span>Responsável: ${highlight(r.resp_nome || '—', query)}</span>
+        </div>
+      </div>
+      <div class="card-right">
+        ${statusBadge(r.status)}
+        <a class="btn" href="${r.link}" target="_blank" rel="noopener">Abrir proposta</a>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function doSearch(){
+  const raw = searchEl.value.trim();
+  shellEl.classList.toggle('active', raw.length > 0);
+
+  const byBrand = activeBrand === 'all' ? DATA : DATA.filter(r => r.marca === activeBrand);
+
+  if(!raw){
+    if(activeBrand === 'all'){ renderIdle(); return; }
+    renderResults(byBrand, '');
+    return;
+  }
+
+  const q = normalize(raw);
+  const results = byBrand.filter(r => {
+    return normalize(r.cnpj).includes(q) ||
+           normalize(r.nome_loja).includes(q) ||
+           normalize(r.resp_nome).includes(q);
+  });
+
+  if(results.length === 0){ renderEmpty(raw); return; }
+  renderResults(results, raw);
+}
+
+searchEl.addEventListener('input', doSearch);
+renderIdle();
+</script>
+</body>
+</html>
